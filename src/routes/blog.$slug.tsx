@@ -4,8 +4,6 @@ import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { supabase } from "@/integrations/supabase/client";
 
-console.log(">>> BlogSlug route loaded", window.location.pathname);
-
 export const Route = createFileRoute("/blog/$slug")({
   component: BlogPost,
   head: () => ({
