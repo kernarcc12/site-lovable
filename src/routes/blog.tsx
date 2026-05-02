@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
@@ -99,7 +99,7 @@ function BlogList() {
           )}
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12">
             {posts.map((p) => (
-              <a key={p.id} href={`/blog/${p.slug}`} className="group block">
+              <Link key={p.id} to="/blog/$slug" params={{ slug: p.slug }} className="group block">
                 <div className="relative overflow-hidden aspect-[4/5] mb-5 bg-secondary">
                   {p.capa_url ? (
                     <img src={p.capa_url} alt={p.titulo} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -121,7 +121,7 @@ function BlogList() {
                 </div>
                 <h2 className="font-display text-2xl md:text-3xl leading-tight group-hover:text-clay transition-colors">{p.titulo}</h2>
                 {p.excerpt && <p className="mt-3 text-muted-foreground leading-relaxed line-clamp-3">{p.excerpt}</p>}
-              </a>
+              </Link>
             ))}
           </div>
         </div>
