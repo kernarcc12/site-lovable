@@ -32,27 +32,21 @@ type Post = {
 
 function BlogPost() {
   const { slug } = useParams({ from: "/blog/$slug" });
-  console.log(">>> BlogSlug rendering with slug:", slug);
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     console.log("Loading post for slug:", slug);
-    setLoading(true);
-    setError(null);
     supabase
       .from("posts")
       .select("id, titulo, excerpt, conteudo, capa_url, imagens, categoria, autor, published_at")
       .eq("slug", slug)
+      .eq("publicado", true)
       .maybeSingle()
       .then(({ data, error }) => {
-        console.log("Post data:", data, "error:", error);
-        if (error) {
-          console.error("Database error:", error);
-          setError(error.message);
-        }
+        console.log("Post data:", data);
+        console.log("Error:", error);
         if (!data) setNotFound(true);
         else setPost(data);
         setLoading(false);
@@ -69,12 +63,6 @@ function BlogPost() {
           </Link>
 
           {loading && <div className="mt-12 text-muted-foreground">Carregando…</div>}
-          {error && (
-            <div className="mt-20 text-center">
-              <h1 className="font-display text-5xl text-destructive">Erro ao carregar postagem</h1>
-              <p className="text-muted-foreground mt-4">{error}</p>
-            </div>
-          )}
           {notFound && (
             <div className="mt-20 text-center">
               <h1 className="font-display text-5xl">Postagem não encontrada</h1>
