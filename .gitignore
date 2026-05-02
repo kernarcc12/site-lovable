@@ -19,6 +19,7 @@ dist-ssr
 # Wrangler / Cloudflare
 .wrangler/
 dist/client/wrangler.json
+dist/client/.assetsignore
 .dev.vars
 
 # Editor directories and files
