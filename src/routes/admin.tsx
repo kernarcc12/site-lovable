@@ -318,9 +318,12 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
     setUploading(true); setErr("");
     const ext = file.name.split(".").pop();
     const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    console.log("Uploading to:", path);
     const { error } = await supabase.storage.from("post-images").upload(path, file, { upsert: false });
+    console.log("Upload error:", error);
     if (error) { setErr(error.message); setUploading(false); return null; }
     const { data } = supabase.storage.from("post-images").getPublicUrl(path);
+    console.log("Public URL:", data.publicUrl);
     setUploading(false);
     return data.publicUrl;
   }
@@ -339,6 +342,7 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
   async function save(e: FormEvent) {
     e.preventDefault();
     setSaving(true); setErr("");
+    console.log("Saving images:", imagens);
     const payload = {
       titulo: titulo || post?.titulo || "",
       slug: slug || slugify(titulo) || "",
@@ -352,9 +356,11 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
       published_at: publicado ? (post?.published_at ?? new Date().toISOString()) : null,
       author_id: user.id,
     };
+    console.log("Payload:", payload);
     const { error } = post
       ? await supabase.from("posts").update(payload).eq("id", post.id)
       : await supabase.from("posts").insert(payload);
+    console.log("Save error:", error);
     setSaving(false);
     if (error) setErr(error.message);
     else {
