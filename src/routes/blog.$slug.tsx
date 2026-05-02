@@ -35,13 +35,16 @@ function BlogPost() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
+    console.log("Loading post for slug:", slug);
     supabase
       .from("posts")
       .select("id, titulo, excerpt, conteudo, capa_url, imagens, categoria, autor, published_at")
       .eq("slug", slug)
       .eq("publicado", true)
       .maybeSingle()
-      .then(({ data }) => {
+      .then(({ data, error }) => {
+        console.log("Post data:", data);
+        console.log("Error:", error);
         if (!data) setNotFound(true);
         else setPost(data);
         setLoading(false);
@@ -88,9 +91,9 @@ function BlogPost() {
                 <div className="prose prose-lg max-w-none text-foreground/90 leading-relaxed whitespace-pre-wrap text-lg">
                   {post.conteudo}
                 </div>
-                {post.imagens && post.imagens.length > 0 && (
+                {post.imagens && post.imagens && post.imagens.length > 0 && (
                   <div className="mt-8 space-y-4">
-                    {post.imagens.map((url, i) => (
+                    {post.imagens.map((url: string, i: number) => (
                       <img key={i} src={url} alt={`Imagem ${i + 1}`} className="w-full max-h-[500px] object-contain border border-border" />
                     ))}
                   </div>
