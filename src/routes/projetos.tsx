@@ -29,9 +29,8 @@ function ProjetosPage() {
 
   useEffect(() => {
     supabase
-      .from("posts")
+      .from("podcasts")
       .select("id, titulo, slug, excerpt, capa_url, categoria, autor, published_at, imagens, audio_url")
-      .eq("categoria", "podcast")
       .eq("publicado", true)
       .order("published_at", { ascending: false })
       .then(({ data }) => {

@@ -29,7 +29,6 @@ export type Database = {
           slug: string
           titulo: string
           updated_at: string
-          audio_url: string | null
           imagens: string[] | null
         }
         Insert: {
@@ -46,7 +45,6 @@ export type Database = {
           slug: string
           titulo: string
           updated_at?: string
-          audio_url?: string | null
           imagens?: string[] | null
         }
         Update: {
@@ -63,8 +61,58 @@ export type Database = {
           slug?: string
           titulo?: string
           updated_at?: string
-          audio_url?: string | null
           imagens?: string[] | null
+        }
+        Relationships: []
+      }
+      podcasts: {
+        Row: {
+          id: string
+          titulo: string
+          slug: string
+          excerpt: string | null
+          conteudo: string | null
+          capa_url: string | null
+          imagens: string[] | null
+          audio_url: string
+          categoria: string
+          autor: string | null
+          publicado: boolean
+          published_at: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          titulo: string
+          slug: string
+          excerpt?: string | null
+          conteudo?: string | null
+          capa_url?: string | null
+          imagens?: string[] | null
+          audio_url: string
+          categoria?: string
+          autor?: string | null
+          publicado?: boolean
+          published_at?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          titulo?: string
+          slug?: string
+          excerpt?: string | null
+          conteudo?: string | null
+          capa_url?: string | null
+          imagens?: string[] | null
+          audio_url?: string
+          categoria?: string
+          autor?: string | null
+          publicado?: boolean
+          published_at?: string | null
+          created_at?: string
+          updated_at?: string
         }
         Relationships: []
       }

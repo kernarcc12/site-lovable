@@ -34,10 +34,9 @@ function PodcastsPage() {
     if (slugMatch) {
       const slug = slugMatch[1];
       supabase
-        .from("posts")
+        .from("podcasts")
         .select("id, titulo, excerpt, conteudo, capa_url, imagens, categoria, autor, published_at, audio_url")
         .eq("slug", slug)
-        .eq("categoria", "podcast")
         .eq("publicado", true)
         .maybeSingle()
         .then(({ data }) => {
@@ -46,9 +45,8 @@ function PodcastsPage() {
         });
     } else {
       supabase
-        .from("posts")
+        .from("podcasts")
         .select("id, titulo, slug, excerpt, capa_url, categoria, autor, published_at, imagens, audio_url")
-        .eq("categoria", "podcast")
         .eq("publicado", true)
         .order("published_at", { ascending: false })
         .then(({ data }) => {

@@ -176,8 +176,12 @@ function Dashboard({ user }: { user: User }) {
   const [showPodcastEditor, setShowPodcastEditor] = useState(false);
 
   async function load() {
-    const { data } = await supabase.from("posts").select("id, titulo, slug, categoria, publicado, published_at, autor").order("created_at", { ascending: false });
-    setPosts(data ?? []);
+    const [postsRes, podcastsRes] = await Promise.all([
+      supabase.from("posts").select("id, titulo, slug, categoria, publicado, published_at, autor").order("created_at", { ascending: false }),
+      supabase.from("podcasts").select("id, titulo, slug, categoria, publicado, published_at, autor").order("created_at", { ascending: false })
+    ]);
+    const allPosts = [...(postsRes.data ?? []), ...(podcastsRes.data ?? [])];
+    setPosts(allPosts);
   }
   useEffect(() => { load(); }, []);
 
@@ -282,13 +286,15 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
 
   useEffect(() => {
     if (!post) return;
-    supabase.from("posts").select("excerpt, conteudo, capa_url, imagens, audio_url").eq("id", post.id).single().then(({ data }) => {
+    const table = post.categoria === "podcast" ? "podcasts" : "posts";
+    const fields = post.categoria === "podcast" ? "excerpt, conteudo, capa_url, imagens, audio_url" : "excerpt, conteudo, capa_url, imagens";
+    supabase.from(table).select(fields).eq("id", post.id).single().then(({ data }) => {
       if (data) {
         setExcerpt(data.excerpt ?? "");
         setConteudo(data.conteudo ?? "");
         setCapaUrl(data.capa_url);
         setImagens(data.imagens ?? []);
-        setAudioUrl(data.audio_url ?? null);
+        if (data.audio_url !== undefined) setAudioUrl(data.audio_url ?? null);
         localStorage.setItem(autoSaveKey, JSON.stringify({
           titulo: post.titulo,
           slug: post.slug,
@@ -363,6 +369,7 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
     e.preventDefault();
     setSaving(true); setErr("");
     console.log("Saving images:", imagens);
+    const isPodcast = categoria === "podcast";
     const payload = {
       titulo: titulo || post?.titulo || "",
       slug: slug || slugify(titulo) || "",
@@ -372,15 +379,16 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
       autor: autor || null,
       capa_url: capaUrl,
       imagens: imagens.length > 0 ? imagens : null,
-      audio_url: audioUrl,
+      ...(isPodcast ? { audio_url: audioUrl } : {}),
       publicado,
       published_at: publicado ? (post?.published_at ?? new Date().toISOString()) : null,
-      author_id: user.id,
+      ...(isPodcast ? {} : { author_id: user.id }),
     };
     console.log("Payload:", payload);
+    const table = isPodcast ? "podcasts" : "posts";
     const { error } = post
-      ? await supabase.from("posts").update(payload).eq("id", post.id)
-      : await supabase.from("posts").insert(payload);
+      ? await supabase.from(table).update(payload).eq("id", post.id)
+      : await supabase.from(table).insert(payload);
     console.log("Save error:", error);
     setSaving(false);
     if (error) setErr(error.message);
@@ -576,17 +584,15 @@ function PodcastEditor({ user, onClose }: { user: User; onClose: () => void }) {
       slug: slug || slugify(titulo),
       excerpt: excerpt || null,
       conteudo: conteudo || "",
-      categoria: "podcast",
       autor: autor || null,
       capa_url: capaUrl,
       imagens: imagens.length > 0 ? imagens : null,
       audio_url: audioUrl,
       publicado,
       published_at: publicado ? new Date().toISOString() : null,
-      author_id: user.id,
     };
 
-    const { error } = await supabase.from("posts").insert(payload);
+    const { error } = await supabase.from("podcasts").insert(payload);
     setSaving(false);
     
     if (error) {
