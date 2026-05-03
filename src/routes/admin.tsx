@@ -192,9 +192,9 @@ function Dashboard({ user }: { user: User }) {
           <h1 className="font-display text-5xl md:text-6xl tracking-tight">Postagens</h1>
         </div>
         <div className="flex items-center gap-4">
-          <Link to="/admin/podcast" className="bg-clay text-paper px-5 py-3 text-xs uppercase tracking-[0.2em] hover:bg-ochre hover:text-ink transition-colors rounded">
+          <button onClick={() => window.location.href = '/admin/podcast'} className="bg-clay text-paper px-5 py-3 text-xs uppercase tracking-[0.2em] hover:bg-ochre hover:text-ink transition-colors rounded">
             + Novo Podcast
-          </Link>
+          </button>
           <button onClick={() => setEditing("new")} className="bg-secondary text-foreground px-5 py-3 text-xs uppercase tracking-[0.2em] hover:bg-clay/20 transition-colors">
             + Nova postagem
           </button>
