@@ -29,6 +29,8 @@ export type Database = {
           slug: string
           titulo: string
           updated_at: string
+          audio_url: string | null
+          imagens: string[] | null
         }
         Insert: {
           author_id?: string | null
@@ -44,6 +46,8 @@ export type Database = {
           slug: string
           titulo: string
           updated_at?: string
+          audio_url?: string | null
+          imagens?: string[] | null
         }
         Update: {
           author_id?: string | null
@@ -59,6 +63,8 @@ export type Database = {
           slug?: string
           titulo?: string
           updated_at?: string
+          audio_url?: string | null
+          imagens?: string[] | null
         }
         Relationships: []
       }

@@ -17,6 +17,9 @@ export function Nav() {
           <Link to="/blog" className="text-muted-foreground hover:text-foreground transition-colors" activeProps={{ className: "text-foreground" }}>
             Blog
           </Link>
+          <Link to="/podcasts" className="text-muted-foreground hover:text-foreground transition-colors" activeProps={{ className: "text-foreground" }}>
+            Podcasts
+          </Link>
           <Link to="/projetos" className="text-muted-foreground hover:text-foreground transition-colors" activeProps={{ className: "text-foreground" }}>
             Projetos
           </Link>

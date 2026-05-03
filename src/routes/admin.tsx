@@ -243,6 +243,7 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
   const [autor, setAutor] = useState("");
   const [capaUrl, setCapaUrl] = useState<string | null>(null);
   const [imagens, setImagens] = useState<string[]>([]);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [publicado, setPublicado] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -262,6 +263,7 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
       setAutor(draft.autor || post?.autor || "");
       setCapaUrl(draft.capa_url ?? post?.capa_url ?? null);
       setImagens(draft.imagens || post?.imagens || []);
+      setAudioUrl(draft.audio_url ?? null);
       setPublicado(draft.publicado ?? post?.publicado ?? false);
     } else if (post) {
       setTitulo(post.titulo);
@@ -274,12 +276,13 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
 
   useEffect(() => {
     if (!post) return;
-    supabase.from("posts").select("excerpt, conteudo, capa_url, imagens").eq("id", post.id).single().then(({ data }) => {
+    supabase.from("posts").select("excerpt, conteudo, capa_url, imagens, audio_url").eq("id", post.id).single().then(({ data }) => {
       if (data) {
         setExcerpt(data.excerpt ?? "");
         setConteudo(data.conteudo ?? "");
         setCapaUrl(data.capa_url);
         setImagens(data.imagens ?? []);
+        setAudioUrl(data.audio_url ?? null);
         localStorage.setItem(autoSaveKey, JSON.stringify({
           titulo: post.titulo,
           slug: post.slug,
@@ -300,8 +303,8 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
   }, [titulo, post]);
 
   useEffect(() => {
-    localStorage.setItem(autoSaveKey, JSON.stringify({ titulo, slug, excerpt, conteudo, categoria, autor, capa_url: capaUrl, imagens, publicado }));
-  }, [titulo, slug, excerpt, conteudo, categoria, autor, capaUrl, imagens, publicado, autoSaveKey]);
+    localStorage.setItem(autoSaveKey, JSON.stringify({ titulo, slug, excerpt, conteudo, categoria, autor, capa_url: capaUrl, imagens, audio_url: audioUrl, publicado }));
+  }, [titulo, slug, excerpt, conteudo, categoria, autor, capaUrl, imagens, audioUrl, publicado, autoSaveKey]);
 
   async function uploadCapa(file: File) {
     setUploading(true); setErr("");
@@ -311,6 +314,17 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
     if (error) { setErr(error.message); setUploading(false); return; }
     const { data } = supabase.storage.from("post-images").getPublicUrl(path);
     setCapaUrl(data.publicUrl);
+    setUploading(false);
+  }
+
+  async function uploadAudio(file: File) {
+    setUploading(true); setErr("");
+    const ext = file.name.split(".").pop();
+    const path = `${user.id}/audio/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("post-images").upload(path, file, { upsert: false });
+    if (error) { setErr(error.message); setUploading(false); return; }
+    const { data } = supabase.storage.from("post-images").getPublicUrl(path);
+    setAudioUrl(data.publicUrl);
     setUploading(false);
   }
 
@@ -352,6 +366,7 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
       autor: autor || null,
       capa_url: capaUrl,
       imagens: imagens.length > 0 ? imagens : null,
+      audio_url: audioUrl,
       publicado,
       published_at: publicado ? (post?.published_at ?? new Date().toISOString()) : null,
       author_id: user.id,
@@ -400,6 +415,7 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
               <option value="noticia">Notícia</option>
               <option value="oficina">Oficina</option>
               <option value="evento">Evento</option>
+              <option value="podcast">Podcast</option>
             </select>
           </div>
           <div>
@@ -440,6 +456,40 @@ function PostEditor({ post, user, onClose }: { post: Post | null; user: User; on
           </label>
           {uploading && <div className="text-xs text-muted-foreground mt-2">Enviando…</div>}
         </div>
+
+        {categoria === "podcast" && (
+          <div className="bg-clay/10 border border-clay/30 rounded-lg p-6">
+            <div className="text-xs uppercase tracking-[0.2em] text-clay mb-4">🎙️ Arquivo de Áudio</div>
+            <div>
+              <label className="text-xs uppercase tracking-[0.2em] text-muted-foreground block mb-2">Upload de áudio (MP3, WAV, OGG)</label>
+              <input type="file" accept="audio/*" onChange={(e) => e.target.files?.[0] && uploadAudio(e.target.files[0])} className="block text-sm" />
+              {uploading && <div className="text-xs text-muted-foreground mt-2">Enviando…</div>}
+            </div>
+            {audioUrl && (
+              <div className="mt-4 p-4 bg-background rounded border border-border">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-clay/20 flex items-center justify-center">
+                      <svg className="w-5 h-5 text-clay" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">Áudio carregado</div>
+                      <div className="text-xs text-muted-foreground truncate max-w-[200px]">{audioUrl.split('/').pop()}</div>
+                    </div>
+                  </div>
+                  <button type="button" onClick={() => setAudioUrl(null)} className="text-xs text-destructive hover:underline">
+                    Remover
+                  </button>
+                </div>
+              </div>
+            )}
+            <div className="mt-4 text-xs text-muted-foreground">
+              O áudio também pode ser adicionado no conteúdo usando uma URL direta (ex: https://exemplo.com/audio.mp3)
+            </div>
+          </div>
+        )}
 
         <div>
           <label className="text-xs uppercase tracking-[0.2em] text-muted-foreground block mb-2">Resumo (excerpt)</label>
