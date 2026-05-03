@@ -63,9 +63,13 @@ function ProjetosPage() {
     <div className="min-h-screen bg-background text-foreground">
       <Nav />
       <section className="pt-32 md:pt-40 pb-20 px-6 lg:px-12 border-b border-border relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-10 left-10 w-40 h-40 rounded-full bg-clay blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-ochre blur-3xl" />
+        <div className="absolute inset-0">
+          <img
+            src="https://images.unsplash.com/photo-1478737270239-2f02b77ac6d5?w=1920&q=80"
+            alt="Podcast"
+            className="h-full w-full object-cover opacity-30"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background via-background/80 to-transparent" />
         </div>
         <div className="mx-auto max-w-[1400px] relative">
           <div className="text-xs uppercase tracking-[0.3em] text-muted-foreground mb-6">
