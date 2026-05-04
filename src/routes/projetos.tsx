@@ -230,9 +230,6 @@ function ProjetosPage() {
                     )}
                     
                     <div className="mt-4 pt-4 border-t border-border/50 flex items-center justify-between">
-                      <span className="text-xs text-muted-foreground uppercase tracking-wider group-hover:text-clay transition-colors">
-                        Ouvir episódio →
-                      </span>
                       {audioUrl && (
                         <span className="text-xs text-clay/70 flex items-center gap-1">
                           <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
