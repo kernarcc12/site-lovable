@@ -160,7 +160,38 @@ function ProjetosPage() {
                     
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                     
-                    
+                    {audioUrl && (
+                      <div className="absolute bottom-4 left-4 right-4">
+                        <div className="bg-black/60 backdrop-blur-sm rounded-full p-1 pr-3 flex items-center gap-3">
+                          <button
+                            onClick={(e) => handlePlay(e, p.id, audioUrl)}
+                            className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                              isPlaying 
+                                ? 'bg-ochre text-ink' 
+                                : 'bg-clay text-paper hover:bg-ochre hover:text-ink'
+                            }`}
+                          >
+                            {isPlaying ? (
+                              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z" />
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z" />
+                              </svg>
+                            )}
+                          </button>
+                          <div className="flex-1 min-w-0">
+                            <div className="h-1.5 bg-white/20 rounded-full overflow-hidden">
+                              <div 
+                                className="h-full bg-clay rounded-full transition-all duration-300"
+                                style={{ width: `${progress[p.id] || 0}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     
                     <div className="absolute top-4 left-4">
                       <span className="bg-clay/90 text-paper text-xs font-mono px-3 py-1.5 uppercase tracking-wider rounded-full backdrop-blur-sm">
